@@ -11,7 +11,6 @@ help: ## список доступных целей
 			printf "  \033[36m%-20s\033[0m (нет описания)\n", a[1] \
 		}' $(MAKEFILE_LIST)
 
-
 PROTO_BASE := proto/cloudapi/
 THIRD_PARTY := $(PROTO_BASE)/third_party/googleapis
 PROTO_FILES := \
@@ -29,5 +28,27 @@ generate: ## генерация bp
 		$(PROTO_FILES)
 
 clean: ## очистка всех сгенерированных файлов
-	rm -rd gen/*
+	rm -rd gen
 
+env:
+	echo "# please delete []" > .env
+	echo "IS_DEBUG=[true/false]" >> .env
+
+GOLANGCI_VERSION := v2.2.1
+GOBIN_PATH := $(shell go env GOBIN)
+ifeq ($(GOBIN_PATH),)
+GOBIN_PATH := $(shell go env GOPATH)/bin
+endif
+LINTER_BIN := $(GOBIN_PATH)/golangci-lint
+
+lint: ## Запуск golangci-lint
+	@if [ ! -x "$(LINTER_BIN)" ]; then \
+		echo "golangci-lint не найден. Запусти: make lint-install"; \
+		exit 1; \
+	fi
+	PATH="$(GOBIN_PATH):$$PATH" $(LINTER_BIN) run
+
+lint-install: ## Установка golangci-lint v2.2.1
+	@echo "Устанавливаю golangci-lint $(GOLANGCI_VERSION) в $(GOBIN_PATH)..."
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_VERSION)
+	@echo "Установка завершена. Проверь, что $(GOBIN_PATH) есть в PATH."
