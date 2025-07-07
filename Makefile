@@ -30,7 +30,7 @@ generate: ## генерация bp
 clean: ## очистка всех сгенерированных файлов
 	rm -rd gen
 
-env:
+env: ## создание .env
 	echo "# please delete []" > .env
 	echo "IS_DEBUG=[true/false]" >> .env
 
@@ -41,14 +41,17 @@ GOBIN_PATH := $(shell go env GOPATH)/bin
 endif
 LINTER_BIN := $(GOBIN_PATH)/golangci-lint
 
-lint: ## Запуск golangci-lint
+lint: ## запуск golangci-lint
 	@if [ ! -x "$(LINTER_BIN)" ]; then \
 		echo "golangci-lint не найден. Запусти: make lint-install"; \
 		exit 1; \
 	fi
 	PATH="$(GOBIN_PATH):$$PATH" $(LINTER_BIN) run
 
-lint-install: ## Установка golangci-lint v2.2.1
+lint-install: ## установка golangci-lint
 	@echo "Устанавливаю golangci-lint $(GOLANGCI_VERSION) в $(GOBIN_PATH)..."
 	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_VERSION)
-	@echo "Установка завершена. Проверь, что $(GOBIN_PATH) есть в PATH."
+	@echo "Установка завершена. Проверь, что $(GOBIN_PATH) есть в PATH."\
+
+test: ## запуск всех тестов
+	go test ./...
