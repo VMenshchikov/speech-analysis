@@ -1,0 +1,24 @@
+version: 2
+run:
+  timeout: 1m
+
+linters:
+  enable:
+    - govet
+    - errcheck
+    - staticcheck
+    - revive
+    - gocyclo
+    - depguard
+    - gosec
+
+issues:
+  exclude-rules:
+    - linters:
+        - gocyclo
+      text: "function is too complex"
+      severity: warning
+
+output:
+  format: colored-line-number
+  sort-results: true
